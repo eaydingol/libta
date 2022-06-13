@@ -1,0 +1,45 @@
+diff --git a/configure.ac b/configure.ac
+index bf1d784..37aac97 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -33,6 +33,8 @@ AC_PROG_RANLIB
+ AM_PROG_LEX
+ AC_ISC_POSIX
+ 
++LT_INIT
++
+ dnl Switch to C++
+ AC_LANG(C++)
+ 
+diff --git a/src/Makefile.am b/src/Makefile.am
+index a151ebc..3292446 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -21,7 +21,7 @@
+ VPATH = @srcdir@
+ 
+ bin_PROGRAMS = pretty syntaxcheck taflow tracer
+-lib_LIBRARIES = libutap.a
++lib_LTLIBRARIES = libutap.la
+ includedir = ${prefix}/include/utap
+ include_HEADERS = utap/abstractbuilder.h utap/builder.h utap/common.h utap/expression.h utap/expressionbuilder.h utap/position.h utap/prettyprinter.h utap/signalflow.h utap/statement.h utap/statementbuilder.h utap/symbols.h utap/system.h utap/systembuilder.h utap/type.h utap/typechecker.h utap/utap.h utap/xmlwriter.h
+ 
+@@ -33,12 +33,13 @@ taflow_SOURCES = taflow.cpp
+ 
+ tracer_SOURCES = tracer.cpp
+ 
+-libutap_a_SOURCES = abstractbuilder.cpp expression.cpp expressionbuilder.cpp position.cpp prettyprinter.cpp signalflow.cpp statement.cpp statementbuilder.cpp symbols.cpp system.cpp systembuilder.cpp type.cpp typechecker.cpp typeexception.cpp xmlreader.cpp xmlwriter.cpp tags.gperf parser.yy libparser.h
+-EXTRA_libutap_a_SOURCES = lexer.ll lexer.cc tags.gperf tags.cc keywords.gperf keywords.cc
++libutap_la_SOURCES = abstractbuilder.cpp expression.cpp expressionbuilder.cpp position.cpp prettyprinter.cpp signalflow.cpp statement.cpp statementbuilder.cpp symbols.cpp system.cpp systembuilder.cpp type.cpp typechecker.cpp typeexception.cpp xmlreader.cpp xmlwriter.cpp tags.gperf parser.yy libparser.h
++EXTRA_libutap_la_SOURCES = lexer.ll lexer.cc tags.gperf tags.cc keywords.gperf keywords.cc
++libutap_la_LDFLAGS = -lxml2
+ 
+-pretty_LDADD = libutap.a $(XML_LIBS)
+-syntaxcheck_LDADD = libutap.a $(XML_LIBS)
+-taflow_LDADD = libutap.a $(XML_LIBS)
++pretty_LDADD = libutap.la $(XML_LIBS)
++syntaxcheck_LDADD = libutap.la $(XML_LIBS)
++taflow_LDADD = libutap.la $(XML_LIBS)
+ AM_CFLAGS = @CFLAGS@ $(XML_CFLAGS) -Wall
+ AM_CPPFLAGS = @CPPFLAGS@ $(XML_CFLAGS) -Wall
+ 
