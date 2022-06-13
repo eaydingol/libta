@@ -21,7 +21,7 @@ Then build and install with the instructions specified in libutap's repository. 
 The install script takes care of this, but in case of building from source, run genbinding.py
 
 ### Install libta:
-Build and install libutap, than simply run:
+Build and install libutap, then simply run:
 
 	pip install .
 
