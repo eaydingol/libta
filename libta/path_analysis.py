@@ -9,7 +9,7 @@ def path_exists(path):
         return False
 
     if len(path) == 1:
-        return True # TODO: Check if the state exists
+        return True  # TODO: Check if the state exists
 
     path = path[1:]
     curr_dst = path[0].dst
@@ -62,7 +62,7 @@ def find_used_clocks(edge_list):
             res = res.union(get_symbols(edge.sync))
         if edge.assign.usesClock():
             res = res.union(get_symbols(edge.assign))
-        if edge.src.invariant.usesClock(): # TODO: Check if symbols are not clocks
+        if edge.src.invariant.usesClock():  # TODO: Check if symbols are not clocks
             res = res.union(get_symbols(edge.src.invariant))
 
     return res
@@ -133,7 +133,7 @@ def calculate_subrow(exp, i, cumul_var, var_count, v, params, epsilon):
         a[cumul_var:i+1] = [1 for _ in range(i - cumul_var + 1)]
         exp_params = list(find_params_in_exp(exp))
         for param in exp_params:
-            a[var_count - len(params) + params.index(param)] = -1 
+            a[var_count - len(params) + params.index(param)] = -1
         sub_A.append(a)
         sub_B.append(v)
 
@@ -154,19 +154,22 @@ def calculate_rows(exp, i, clocks, cumul_vars, cumul_vals, var_count, params, A,
         cumul_var = cumul_vars[clocks.index(exp[0].toString())]
         cumul_val = cumul_vals[str(exp[0].toString())]
         v = exp[1].getValue() - cumul_val
-        sub_A, sub_B = calculate_subrow(exp, i, cumul_var, var_count, v, params, epsilon)
+        sub_A, sub_B = calculate_subrow(
+            exp, i, cumul_var, var_count, v, params, epsilon)
         A += sub_A
         B += sub_B
-    else: # If the expression consists of more than two clocks, consider them seperately
+    else:  # If the expression consists of more than two clocks, consider them seperately
         cumul_var1 = cumul_vars[clocks.index(exp[0][0].toString())]
         cumul_val1 = cumul_vals[str(exp[0][0].toString())]
         v1 = exp[1].getValue() - cumul_val1
-        sub_A1, sub_B1 = calculate_subrow(exp, i, cumul_var1, var_count, v1, params, epsilon)
+        sub_A1, sub_B1 = calculate_subrow(
+            exp, i, cumul_var1, var_count, v1, params, epsilon)
 
         cumul_var2 = cumul_vars[clocks.index(exp[0][1].toString())]
         cumul_val2 = cumul_vals[str(exp[0][1].toString())]
         v2 = -cumul_val2
-        sub_A2, sub_B2 = calculate_subrow(exp, i, cumul_var2, var_count, v2, params, epsilon)
+        sub_A2, sub_B2 = calculate_subrow(
+            exp, i, cumul_var2, var_count, v2, params, epsilon)
 
         if exp[0].getKind() == Constants.MINUS:
             for i in range(len(sub_A1)):
@@ -184,11 +187,11 @@ def calculate_rows(exp, i, clocks, cumul_vars, cumul_vals, var_count, params, A,
 def calculate_constraint_matrices(path, initial_clock_values=None, epsilon=0):
     init_state = path[0]
     path = path[1:]
-    
+
     A = []
     B = []
 
-    if path == []: # If the path does not have any edges, use the initial state
+    if path == []:  # If the path does not have any edges, use the initial state
         src_exp_list = get_expression_list(init_state.invariant)
         clocks = set()
         params = set()
@@ -209,7 +212,8 @@ def calculate_constraint_matrices(path, initial_clock_values=None, epsilon=0):
 
         for exp in src_exp_list:
             if exp.usesClock():
-                calculate_rows(exp, 0, clocks, cumul_vars, cumul_vals, 1, params, A, B, epsilon)
+                calculate_rows(exp, 0, clocks, cumul_vars,
+                               cumul_vals, 1, params, A, B, epsilon)
 
         return A, B, 1
 
@@ -226,15 +230,19 @@ def calculate_constraint_matrices(path, initial_clock_values=None, epsilon=0):
         cumul_vals = {clock: 0 for clock in clocks}
 
     for i, edge in enumerate(path):
-        src_exp_list = get_expression_list(edge.src.invariant) # Get the expressions in the invariant of the source state
+        # Get the expressions in the invariant of the source state
+        src_exp_list = get_expression_list(edge.src.invariant)
         for exp in src_exp_list:
             if exp.usesClock():
-                calculate_rows(exp, i, clocks, cumul_vars, cumul_vals, var_count, params, A, B, epsilon) # Calculate the rows of the coefficient and the constraint matrices
+                # Calculate the rows of the coefficient and the constraint matrices
+                calculate_rows(exp, i, clocks, cumul_vars,
+                               cumul_vals, var_count, params, A, B, epsilon)
 
         guard_exp_list = get_expression_list(edge.guard)
         for exp in guard_exp_list:
             if exp.usesClock():
-                calculate_rows(exp, i, clocks, cumul_vars, cumul_vals, var_count, params, A, B, epsilon)
+                calculate_rows(exp, i, clocks, cumul_vars,
+                               cumul_vals, var_count, params, A, B, epsilon)
 
         assign_exp_list = get_expression_list(edge.assign)
         for exp in assign_exp_list:
@@ -246,7 +254,8 @@ def calculate_constraint_matrices(path, initial_clock_values=None, epsilon=0):
     dst_exp_list = get_expression_list(path[-1].dst.invariant)
     for exp in dst_exp_list:
         if exp.usesClock():
-            calculate_rows(exp, i, clocks, cumul_vars, cumul_vals, var_count, params, A, B, epsilon)
+            calculate_rows(exp, i, clocks, cumul_vars, cumul_vals,
+                           var_count, params, A, B, epsilon)
 
     return A, B, var_count
 
@@ -257,7 +266,8 @@ def is_path_realizable(path, initial_clock_vals=None, print_matrices=False, prin
             print("Path does not exist")
         return False, []
 
-    A, B, var_count = calculate_constraint_matrices(path, initial_clock_vals, epsilon)
+    A, B, var_count = calculate_constraint_matrices(
+        path, initial_clock_vals, epsilon)
     if print_matrices:
         for i in range(len(A)):
             print(A[i], "<=", B[i])

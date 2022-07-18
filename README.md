@@ -3,7 +3,7 @@ Libta is a python library for basic timed automata reachability analysis in pyth
 
 ## Dependencies:
 
-- [libutap](https://github.com/UPPAALModelChecker/utap) Uppaal timed automata parser
+- [libutap](https://github.com/UPPAALModelChecker/utap) Uppaal timed automata parser version 0.94
   
 - [cppyy](https://github.com/wlav/cppyy) >= 1.7.1
 
@@ -11,7 +11,7 @@ To be able to use this library, libutap has to be built as a dynamic library for
 
 ### Building libutap as a dynamic library:
 
-Clone [libutap](https://github.com/UPPAALModelChecker/utap), copy the patch from this repository to the cloned directory and apply with:
+Download [libutap](https://github.com/UPPAALModelChecker/utap) version 0.94 from releases and extract, copy the patch from this repository to the cloned directory and apply with:
 
 	git apply dynamic_link.patch && autoreconf -i
 
@@ -26,7 +26,8 @@ Build and install libutap, then simply run:
 	pip install .
 
 ### TODOs:
+- Product automaton tests to be written
 - Unit tests for parameter values in expressions and initial clock valuations
-- Product automaton calculation
+- Better documentation
 - Use python or CMake environment to automate building and installation of libutap.
 - Error handling, prevent crashing of the Python kernel completely
